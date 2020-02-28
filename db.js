@@ -25,14 +25,27 @@ exports.connect = function (mode, done) {
 exports.get = function () {
     return state.pool;
 };
-
+//GET all users
 exports.getUsers = function (successCb, errCb) {
     var sql = "SELECT * FROM Users;";
     this.get().query(sql).then(successCb).catch(errCb);
 }
+//Create a User
+exports.createUser = function (userName, successCb, errCb){
+    var sql = "INSERT INTO Users(User_Name) values(?);"
+    this.get()
+    .query(
+        {sql: sql},
+        [userName]
+    )
+    .then(successCb)
+    .catch(errCb);
 
-exports.addPost = function (postToInsert, successCb, errCb) {
-    var sql = "INSERT INTO posts(title, content) values(:title,:content);";
+}
+}
+//Add a Game key
+exports.addKey= function (postToInsert, successCb, errCb) {
+    var sql = "INSERT INTO Game_keys(Server_ID, Key_type, Key_string) values(:Server_ID,:Key_type,:Key_string);";
 
     this.get()
         .query(
@@ -42,20 +55,34 @@ exports.addPost = function (postToInsert, successCb, errCb) {
         .then(successCb)
         .catch(errCb);
 }
+//Get from key to server
+exports.getLocationofKey = function(keyName, successCb, errCb){
+    var sql = "SELECT Server_ID FROM Game_Keys WHERE Key_string = ?;"
+    this.get()
+    .query(
+        {sql: sql},
+        [keyName]
+    )
+    .then(successCb)
+    .catch(errCb);
 
-exports.getAllPosts = function (successCb, errCb) {
-    var sql = "SELECT * FROM posts;";
+}
 
+//See all game keys from a server
+exports.getKeys = function (serverIDCheck,successCb, errCb) {
+    var sql = "SELECT * FROM Game_Keys WHERE Server_ID = ?;";
     this.get()
         .query(
-            {sql: sql}
+            {sql: sql},
+            [serverIDCheck]
         )
         .then(successCb)
         .catch(errCb);
 }
 
-exports.deletePost = function (idToDelete, successCb, errCb) {
-    var sql = "DELETE FROM posts WHERE post_id = ?;";
+//Delete a post
+exports.deleteKey = function (idToDelete, successCb, errCb) {
+    var sql = "DELETE FROM Game_Keys WHERE Key_string = ?;";
     this.get()
         .query(
             sql,

@@ -7,40 +7,52 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-module.exports = router;
+router.get("/signup", (req, res) => {
+  bcrypt.hash(req.body.password, 10).then(hash =>{
+    const User = {
+      email: req.body.email,
+      username: req.body.username,
+      password: hash,
+    }
+    db.createUser(User, function(err){
+      if(err)
+      {
+        res.status(500).json(err);
+      }
+      else{
+        res.json({
+          message: "User inserted!"
+        });
+      }
+    })
+  })
+})
 
-/* CREATE (Post)*/
-var mariadb = "INSERT INTO tableName (column_1, column_2, ... ) VALUES (value1, value2, ... );";   
-
-/* READ (Get)*/
-var mariadb = "SELECT * FROM ??; ";
-var inserts = ['Users'];
-mariadb = maria.format(mariadb, inserts);
-db.get().query(mariadb, function(error, result) {
-  if (error){
-    callback(error);
-  }
-  console.log("POST: " + JSON.stringify(result));
-}
-/* UPDATE (Patch) */
-
-/* DELETE (Delete) */
-
-/* Example for help
-var sql = "SELECT * FROM ?? WHERE ??=?;";
-var inserts = ['users', 'username', username];
-sql = mysql.format(sql, inserts);
-db.get().query(sql, function (error, result) {
-  if (error) {
-    callback(error);
-  }
-  console.log("POST(select): " + JSON.stringify(result));
-  if (result.length !== 0) {
-    userId = result[0].id;
-  }
-  else {
-    userId = -1;
-  }
-  callback(null, 0);
+router.get("/deleteKey", (req, res) => {
+  const idToDelete = req.body.key_string;
+  db.deleteKey(idToDelete, function(results){
+    res.status(200).json({});
+  }, function (err){
+    console.error(err);
+    res.status(500).json({});
+  });
 });
-*/
+
+router.get("/getKey", (req, res) => {
+  const keyname = req.body.keyname;
+  const Server_ID = req.body.Server_ID;
+  db.getLocationofKey(keyname, function(results){
+    res.status(200).json({});
+  }, function (err){
+    console.error(err);
+    res.status(500).json({});
+  });
+  db.getKeys(server_ID, function (results){
+    res.status(200).json({});
+  }, function (err){
+    console.error(err);
+    res.status(500).json({})
+  });
+});
+
+module.exports = router;

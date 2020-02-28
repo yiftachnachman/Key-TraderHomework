@@ -1,30 +1,74 @@
+const http = require('http');
+const debug = require("debug")("node-angular");
 
-const mariadb = require('mariadb');
+const app = require('./app');
+var db = require('./db');
 
-console.log('May Node be with you')
-const express = require('express');
-const app = express();
+db.connect(db.MODE_PRODUCTION, function(err){
+    if(err){
+        console.log("Unable to connect to Mariadb");
+        process.exit(1);
+    }
+    else{
+        console.log("Mariadb Connected Successfully");
+        db.getUsers((results) => {
+            console.log(results[0]);
+        }, (err) => {
+            console.log(err);
+        });
+    }
+});
 
-app.listen(3000, function() {
-	console.log('listening on 3000')
-})
+const normalizePort = val => {
+    var port = parseInt(val, 10);
 
+    if (isNaN(port)){
+        // named pip
+        return val;
+    }
 
-const pool = mariadb.createPool({host: "localhost", user: "root", password:"1234", connectionLimit: 5});
-pool.getConnection()
-    .then(conn => {
-		console.log("You are connected to the database!")
-    //   conn.query("")
-    //     .then(rows => { // rows: [ {val: 1}, meta: ... ]
-    //       return conn.query("INSERT INTO myTable value (?, ?)", [1, "mariadb"]);
-    //     })
-    //     .then(res => { // res: { affectedRows: 1, insertId: 1, warningStatus: 0 }
-    //       conn.release(); // release to pool
-    //     })
-    //     .catch(err => {
-    //       conn.release(); // release to pool
-    //     })
-        
-    }).catch(err => {
-      //not connected
-    });
+    if (port >= 0)
+    {
+        // port number
+        return port;
+    }
+
+    return false;
+};
+
+const onError = error => {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    const bind = typeof addr == "string" ? "pipe " + addr : "port " + port;
+
+    switch(error.code) {
+        case "EACCES":
+            console.error(bind + " requires elevated privileges");
+            process.exit(1);
+            break;
+        case "EADDRINUSE":
+            console.error(bind + " is already in use");
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    };
+};
+
+const onListening = () => {
+    const addr = server.address();
+    const bind = typeof addr == "string" ? "pipe " + addr : "port " + port;
+
+    debug("Listening on " + bind);
+};
+
+const port = normalizePort(process.env.PORT || "3000");
+
+app.set('post', port);
+
+const server = http.createServer(app);
+server.on("error", onError);
+server.on("listening", onListening);
+server.listen(port);
