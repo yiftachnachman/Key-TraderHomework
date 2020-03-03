@@ -5,6 +5,7 @@ var db = require('../db');
 /* GET users listing. */
 // 192.168.58.128/api/users/
 router.get('/', function(req, res, next) {
+
   db.getUsers(function (results) {
     res.status(200).json(results);
   }, function (err) {

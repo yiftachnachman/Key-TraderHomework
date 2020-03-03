@@ -9,6 +9,7 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 var db = require('./db');
+
 db.connect(db.MODE_PRODUCTION, function(err){
     if(err){
         console.log("Unable to connect to mysql");

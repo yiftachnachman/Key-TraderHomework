@@ -1,7 +1,4 @@
-  
-var mariadb = require('mariadb');
-
-
+ var mariadb = require('mariadb');
 exports.MODE_TEST = 'mode_test';
 exports.MODE_PRODUCTION = 'mode_production';
 
@@ -32,7 +29,7 @@ exports.getUsers = function (successCb, errCb) {
 }
 //Create a User
 exports.createUser = function (userName, successCb, errCb){
-    var sql = "INSERT INTO Users(User_Name) values(?);"
+    var sql = "INSERT INTO Users(User_Name) values(?);";
     this.get()
     .query(
         {sql: sql},
@@ -42,22 +39,20 @@ exports.createUser = function (userName, successCb, errCb){
     .catch(errCb);
 
 }
-}
 //Add a Game key
-exports.addKey= function (postToInsert, successCb, errCb) {
-    var sql = "INSERT INTO Game_keys(Server_ID, Key_type, Key_string) values(:Server_ID,:Key_type,:Key_string);";
-
+exports.addKey= function (key, successCb, errCb) {
+    var sql = "INSERT INTO Game_keys(U_ID, Server_ID, Key_type, Key_string) values(?, ?, ?, ?);";
     this.get()
         .query(
-            {namedPlaceholders: true, sql:sql},
-            postToInsert
+            {sql:sql},
+            [key.U_ID, key.Server_ID, key.Key_type, key.Key_string]
         )
         .then(successCb)
         .catch(errCb);
 }
 //Get from key to server
 exports.getLocationofKey = function(keyName, successCb, errCb){
-    var sql = "SELECT Server_ID FROM Game_Keys WHERE Key_string = ?;"
+    var sql = "SELECT Server_ID FROM Game_Keys WHERE Key_string = ?;";
     this.get()
     .query(
         {sql: sql},
@@ -80,12 +75,12 @@ exports.getKeys = function (serverIDCheck,successCb, errCb) {
         .catch(errCb);
 }
 
-//Delete a post
+//Delete a key
 exports.deleteKey = function (idToDelete, successCb, errCb) {
     var sql = "DELETE FROM Game_Keys WHERE Key_string = ?;";
     this.get()
         .query(
-            sql,
+            {sql: sql},
             [idToDelete]
         )
         .then(successCb)
