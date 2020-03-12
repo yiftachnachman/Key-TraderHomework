@@ -27,13 +27,24 @@ exports.getUsers = function (successCb, errCb) {
     var sql = "SELECT * FROM Users;";
     this.get().query(sql).then(successCb).catch(errCb);
 }
-//Create a User
-exports.createUser = function (userName, successCb, errCb){
-    var sql = "INSERT INTO Users(User_Name) values(?);";
+//Get user token
+exports.getUserToken = function (userName,successCb, errCb){
+    var sql = "SELECT Discord_Token FROM USERS WHERE User_Name = ?;";
     this.get()
     .query(
         {sql: sql},
-        [userName]
+        [userName.User_Name]    
+    )
+    .then(successCb)
+    .catch(errCb);
+}
+//Create a User
+exports.createUser = function (userName, successCb, errCb){
+    var sql = "INSERT INTO Users(User_Name, Discord_Token) values(?, ?);";
+    this.get()
+    .query(
+        {sql: sql},
+        [userName.User_Name, userName.Discord_Token]
     )
     .then(successCb)
     .catch(errCb);

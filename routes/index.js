@@ -7,7 +7,17 @@ var db = require('../db');
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
 });
-
+router.get("/getUsers", (req, res) => {
+  db.getUsers(function(err){
+    if(err)
+    {
+      res.status(500).json(err);
+    }
+    else{
+      res.status(200).json(results);
+    }
+  });
+});
 router.get("/signup", (req, res) => {
   bcrypt.hash('password', 10).then(hash =>{
     const User = {

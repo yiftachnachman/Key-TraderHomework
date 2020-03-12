@@ -8,6 +8,7 @@ router.get('/', function(req, res, next) {
 
   db.getUsers(function (results) {
     res.status(200).json(results);
+    console.log(results);
   }, function (err) {
     res.status(500).json(err);
   });
